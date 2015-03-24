@@ -2,7 +2,7 @@
 
 def main():
     """Stub function"""
-    raise NotImplementedError
+    pass
 
 if __name__ == '__main__':
     main()

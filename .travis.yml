@@ -11,4 +11,4 @@ install:
 before_script:
   - flake8 django_genshi_template
 script:
-  tests/runtests.py
+  - python runtests.py
