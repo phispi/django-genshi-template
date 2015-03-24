@@ -20,7 +20,7 @@ class Genshi(BaseEngine):
 
     def __init__(self, params):
         params = params.copy()
-        options = params.pop('OPTIONS').copy()
+        options = params.pop('OPTIONS').copy()  # NOQA
         super(Genshi, self).__init__(params)
         self.loader = TemplateLoader(self.template_dirs)
 
