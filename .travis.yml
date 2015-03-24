@@ -4,7 +4,7 @@ python:
 env:
   - DJANGO=django==1.8c1
 install:
-  - travis_retry pop install $DJANGO
+  - travis_retry pip install $DJANGO
   - pip install genshi
   - pip install -e .
 before_script:
