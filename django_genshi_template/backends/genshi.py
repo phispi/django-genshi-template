@@ -8,6 +8,7 @@ from django.template.backends.utils import csrf_input_lazy, csrf_token_lazy
 from django.utils import six
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.dispatch import Signal
 
 from genshi.template import TemplateLoader
 from genshi.template.base import TemplateSyntaxError \
@@ -49,6 +50,13 @@ class Genshi(BaseEngine):
                         sys.exc_info()[2])
 
 
+# signal emitted just before the template is rendered by the Template class to
+# have an opportunity to add context variables. genshi_context is the Genshi
+# context (genshi.template.base.Context()) already filled with 'static' and
+# 'url' and - if it's a request - 'request', 'csrf_input' and 'csrf_token'.
+template_render = Signal(providing_args=["genshi_context"])
+
+
 class Template(object):
 
     def __init__(self, template, serialization, doctype):
@@ -67,6 +75,7 @@ class Template(object):
         if context is not None:
             genshi_context.push(context)
         stream = self.template.generate(genshi_context)
+        template_render.send(self, genshi_context=genshi_context)
         # this might raise a genshi.template.eval.UndefinedError (derived from
         # genshi.template.base.TemplateRuntimeError)
         return stream.render(self.serialization, doctype=self.doctype)
