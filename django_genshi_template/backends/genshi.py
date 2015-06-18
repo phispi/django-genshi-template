@@ -6,6 +6,8 @@ from django.template import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.backends.base import BaseEngine
 from django.template.backends.utils import csrf_input_lazy, csrf_token_lazy
 from django.utils import six
+from django.core.urlresolvers import reverse
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 from genshi.template import TemplateLoader
 from genshi.template.base import TemplateSyntaxError \
@@ -56,6 +58,8 @@ class Template(object):
 
     def render(self, context=None, request=None):
         genshi_context = GenshiContext()
+        genshi_context['static'] = staticfiles_storage.url
+        genshi_context['url'] = reverse
         if request is not None:
             genshi_context['request'] = request
             genshi_context['csrf_input'] = csrf_input_lazy(request)
