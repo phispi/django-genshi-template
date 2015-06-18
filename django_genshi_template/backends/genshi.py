@@ -23,7 +23,9 @@ class Genshi(BaseEngine):
         options = params.pop('OPTIONS').copy()
         self.app_dirname = options.get('app_dirname', self.app_dirname)
         super(Genshi, self).__init__(params)
-        self.loader = TemplateLoader(self.template_dirs)
+        auto_reload = options.get('auto_reload', False)
+        self.loader = TemplateLoader(self.template_dirs,
+                                     auto_reload=auto_reload)
 
     def from_string(self, template_code):
         return Template(MarkupTemplate(template_code))
