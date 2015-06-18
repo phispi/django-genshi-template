@@ -63,4 +63,6 @@ class Template(object):
         if context is not None:
             genshi_context.push(context)
         stream = self.template.generate(genshi_context)
+        # this might raise a genshi.template.eval.UndefinedError (derived from
+        # genshi.template.base.TemplateRuntimeError)
         return stream.render(self.serialization, doctype=self.doctype)
