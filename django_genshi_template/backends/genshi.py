@@ -9,7 +9,7 @@ from django.utils import six
 
 from genshi.template import TemplateLoader
 from genshi.template.base import TemplateSyntaxError \
-    as GenshiTemplateSyntaxError
+    as GenshiTemplateSyntaxError, Context as GenshiContext
 from genshi.template.loader import TemplateNotFound
 from genshi.template.markup import MarkupTemplate
 
@@ -55,11 +55,12 @@ class Template(object):
         self.doctype = doctype
 
     def render(self, context=None, request=None):
-        if context is None:
-            context = {}
-
+        genshi_context = GenshiContext()
         if request is not None:
-            context['request'] = request
-            context['csrf_input'] = csrf_input_lazy(request)
-            context['csrf_token'] = csrf_token_lazy(request)
-        return self.template.generate(**context).render(self.serialization, doctype=self.doctype)
+            genshi_context['request'] = request
+            genshi_context['csrf_input'] = csrf_input_lazy(request)
+            genshi_context['csrf_token'] = csrf_token_lazy(request)
+        if context is not None:
+            genshi_context.push(context)
+        stream = self.template.generate(genshi_context)
+        return stream.render(self.serialization, doctype=self.doctype)
