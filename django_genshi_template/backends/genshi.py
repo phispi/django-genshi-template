@@ -26,13 +26,16 @@ class Genshi(BaseEngine):
         auto_reload = options.get('auto_reload', False)
         self.loader = TemplateLoader(self.template_dirs,
                                      auto_reload=auto_reload)
+        self.serialization = options.get('serialization', 'html')
 
     def from_string(self, template_code):
-        return Template(MarkupTemplate(template_code))
+        return Template(MarkupTemplate(template_code),
+                        self.serialization)
 
     def get_template(self, template_name):
         try:
-            return Template(self.loader.load(template_name))
+            return Template(self.loader.load(template_name),
+                            self.serialization)
         except TemplateNotFound as exc:
             six.reraise(TemplateDoesNotExist, TemplateDoesNotExist(exc.args),
                         sys.exc_info()[2])
@@ -43,8 +46,9 @@ class Genshi(BaseEngine):
 
 class Template(object):
 
-    def __init__(self, template):
+    def __init__(self, template, serialization):
         self.template = template
+        self.serialization = serialization
 
     def render(self, context=None, request=None):
         if context is None:
@@ -54,4 +58,4 @@ class Template(object):
             context['request'] = request
             context['csrf_input'] = csrf_input_lazy(request)
             context['csrf_token'] = csrf_token_lazy(request)
-        return self.template.generate(**context).render('html', doctype='html')
+        return self.template.generate(**context).render(self.serialization, doctype='html')
