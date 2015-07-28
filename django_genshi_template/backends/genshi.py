@@ -57,6 +57,10 @@ class Genshi(BaseEngine):
 template_render = Signal(providing_args=["genshi_context"])
 
 
+def url(viewname, *args, **kwargs):
+    return reverse(viewname, args=args, kwargs=kwargs)
+
+
 class Template(object):
 
     def __init__(self, template, serialization, doctype):
@@ -67,7 +71,7 @@ class Template(object):
     def render(self, context=None, request=None):
         genshi_context = GenshiContext()
         genshi_context['static'] = staticfiles_storage.url
-        genshi_context['url'] = reverse
+        genshi_context['url'] = url
         if request is not None:
             genshi_context['request'] = request
             genshi_context['csrf_input'] = csrf_input_lazy(request)
