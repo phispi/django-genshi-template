@@ -14,7 +14,7 @@ from genshi.template import TemplateLoader
 from genshi.template.base import TemplateSyntaxError \
     as GenshiTemplateSyntaxError, Context as GenshiContext
 from genshi.template.loader import TemplateNotFound
-from genshi.template.markup import MarkupTemplate
+from genshi.template.markup import MarkupTemplate, Markup
 
 
 class Genshi(BaseEngine):
@@ -74,7 +74,7 @@ class Template(object):
         genshi_context['url'] = url
         if request is not None:
             genshi_context['request'] = request
-            genshi_context['csrf_input'] = csrf_input_lazy(request)
+            genshi_context['csrf_input'] = Markup(csrf_input_lazy(request))
             genshi_context['csrf_token'] = csrf_token_lazy(request)
         if context is not None:
             genshi_context.push(context)
